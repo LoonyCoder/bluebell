@@ -7,7 +7,6 @@ import (
 )
 
 func SignUp(p *models.ParamSignUp) (err error) {
-
 	// 判断用户是否存在
 	if err := mysql.CheckUserExist(p.Username); err != nil {
 		// 数据库查询异常
@@ -23,4 +22,12 @@ func SignUp(p *models.ParamSignUp) (err error) {
 	}
 	// 保存数据库
 	return mysql.InsertUser(user)
+}
+
+func Login(p *models.ParamLogin) error {
+	user := &models.User{
+		Username: p.Username,
+		Password: p.Password,
+	}
+	return mysql.Login(user)
 }
