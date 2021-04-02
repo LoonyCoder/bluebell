@@ -1,6 +1,7 @@
 package main
 
 import (
+	"BlueBell/controller"
 	"BlueBell/dao/mysql"
 	"BlueBell/dao/redis"
 	"BlueBell/logger"
@@ -8,7 +9,6 @@ import (
 	"BlueBell/routers"
 	"BlueBell/settings"
 	"fmt"
-	"net/http"
 )
 
 func main() {
@@ -39,15 +39,20 @@ func main() {
 		fmt.Printf("init snowflake failed , err:%v\n", err)
 		return
 	}
-	// 注册路由
-	engine := routers.Setup()
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%d", settings.Conf.Port),
-		Handler: engine,
+	//初始化gin框架内置的校验器使用的翻译器
+	if err := controller.InitTrans("zh"); err != nil {
+		fmt.Printf("init validator trans failed , err:%v\n", err)
+		return
 	}
 
-	srv.ListenAndServe()
+	// 注册路由
+	engine := routers.SetupRouter()
+	err := engine.Run(fmt.Sprintf(":%d", settings.Conf.Port))
+	if err != nil {
+		fmt.Printf("run server failed , err:%v\n", err)
+		return
+	}
 
 	//go func() {
 	//	// 开启一个goroutine启动服务
