@@ -3,6 +3,7 @@ package routers
 import (
 	"BlueBell/controller"
 	"BlueBell/logger"
+	"BlueBell/middlewares"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -20,8 +21,7 @@ func SetupRouter(mode string) *gin.Engine {
 	//登录业务路由
 	engine.POST("/login", controller.LoginHandler)
 
-
-	engine.GET("/ping", func(context *gin.Context) {
+	engine.GET("/ping", middlewares.JWTAuthMiddleware(), func(context *gin.Context) {
 		context.String(http.StatusOK, "pong")
 	})
 

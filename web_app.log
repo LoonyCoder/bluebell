@@ -1,2 +1,4 @@
 {"level":"INFO","time":"2021-04-02T15:39:35.826+0800","caller":"logger/logger.go:44","msg":"init logger success"}
 {"level":"INFO","time":"2021-04-02T15:39:39.546+0800","caller":"logger/logger.go:77","msg":"/signup","status":200,"method":"POST","path":"/signup","query":"","ip":"127.0.0.1","user-agent":"PostmanRuntime/7.26.8","errors":"","cost":0.091687604}
+{"level":"INFO","time":"2021-04-02T18:27:32.820+0800","caller":"logger/logger.go:44","msg":"init logger success"}
+{"level":"INFO","time":"2021-04-02T18:27:46.570+0800","caller":"logger/logger.go:77","msg":"/login","status":200,"method":"POST","path":"/login","query":"","ip":"127.0.0.1","user-agent":"PostmanRuntime/7.26.8","errors":"","cost":0.078974473}
