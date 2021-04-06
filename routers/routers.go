@@ -15,15 +15,22 @@ func SetupRouter(mode string) *gin.Engine {
 	engine := gin.New()
 	engine.Use(logger.GinLogger(), logger.GinRecovery(true))
 
+	v1 := engine.Group("/api/v1")
 	//注册业务路由
-	engine.POST("/signup", controller.SignUpHandler)
+	v1.POST("/signup", controller.SignUpHandler)
 
 	//登录业务路由
-	engine.POST("/login", controller.LoginHandler)
+	v1.POST("/login", controller.LoginHandler)
 
-	engine.GET("/ping", middlewares.JWTAuthMiddleware(), func(context *gin.Context) {
-		context.String(http.StatusOK, "pong")
-	})
+	v1.Use(middlewares.JWTAuthMiddleware())  // 应用JWT认证中间件
+
+	{
+		v1.GET("/community",controller.CommunityHandler)
+		v1.GET("/community/:id",controller.CommunityDetailHandler)
+
+		v1.POST("/post",controller.CreatePostHandler)
+	}
+
 
 	engine.NoRoute(func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{
