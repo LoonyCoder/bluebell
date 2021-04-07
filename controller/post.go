@@ -74,6 +74,33 @@ func GetPostListHandler(context *gin.Context) {
 	ResponseSuccess(context, data)
 }
 
+// GetPostListHandler2 升级版忒自列表接口
+// 根据前端传来的排序参数（按创建时间、按分数） 动态获取贴子列表
+func GetPostListHandler2(context *gin.Context) {
+	// 1.获取参数
+	p := &models.ParamPostList{
+		Page:  1,
+		Size:  10,
+		Order: models.OrderTime,
+	}
+	if err := context.ShouldBindQuery(p); err != nil {
+		zap.L().Error("logic.GetPostListHandler2() with invalid params", zap.Error(err))
+		ResponseError(context, CodeInvalidParam)
+		return
+	}
+
+
+	// 获取数据
+	data, err := logic.GetPostList2(p)
+	if err != nil {
+		zap.L().Error("logic.GetPostList2() failed", zap.Error(err))
+		ResponseError(context, CodeServerBusy)
+		return
+	}
+	// 返回响应
+	ResponseSuccess(context, data)
+}
+
 func getPageInfo(context *gin.Context) (int64, int64) {
 	pageStr := context.Query("page")
 	sizeStr := context.Query("size")
