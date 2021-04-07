@@ -2,6 +2,7 @@ package logic
 
 import (
 	"BlueBell/dao/mysql"
+	"BlueBell/dao/redis"
 	"BlueBell/models"
 	"BlueBell/pkg/snowflake"
 	"go.uber.org/zap"
@@ -15,10 +16,13 @@ func CreatePost(post *models.Post) (err error) {
 
 	// 2.保存到数据库
 
-	return mysql.CreatePost(post)
-
+	err = mysql.CreatePost(post)
+	if err != nil {
+		return err
+	}
+	err = redis.CreatePost(post.ID)
 	// 3.返回
-
+	return
 }
 
 func GetPostById(pid int64) (data *models.ApiPostDetail, err error) {
@@ -50,8 +54,8 @@ func GetPostById(pid int64) (data *models.ApiPostDetail, err error) {
 	return
 }
 
-func GetPostList() (postList []*models.ApiPostDetail, err error) {
-	posts, err := mysql.GetPostList()
+func GetPostList(page, size int64) (postList []*models.ApiPostDetail, err error) {
+	posts, err := mysql.GetPostList(page, size)
 	if err != nil {
 		return nil, err
 	}

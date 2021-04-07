@@ -41,6 +41,7 @@ func VoteForPost(userId, postId string, value float64) error {
 	if float64(time.Now().Unix())-postTime > oneWeekInSeconds {
 		return ErrVoteTimeExpire
 	}
+
 	// 2.更新帖子的分数
 	// 先查询当前用户给当前帖子的投票记录
 	ov := client.ZScore(getRedisKey(KeyPostVotedZSetPrefix+postId), userId).Val()
@@ -51,18 +52,37 @@ func VoteForPost(userId, postId string, value float64) error {
 		op = -1
 	}
 	diff := math.Abs(ov - value)
-	_, err := client.ZIncrBy(getRedisKey(KeyPostScoreZSet), op*diff*scorePerVote, postId).Result()
-	if ErrVoteTimeExpire != nil {
-		return err
-	}
+	// 2和3需要添加事务
+	pipeline := client.TxPipeline()
+	pipeline.ZIncrBy(getRedisKey(KeyPostScoreZSet), op*diff*scorePerVote, postId)
+
 	// 3.记录用户为该帖子投过票
 	if value == 0 {
-		_, err = client.ZRem(getRedisKey(KeyPostVotedZSetPrefix+postId), userId).Result()
+		pipeline.ZRem(getRedisKey(KeyPostVotedZSetPrefix+postId), userId)
 	} else {
-		_, err = client.ZAdd(getRedisKey(KeyPostVotedZSetPrefix+postId), redis.Z{
+		pipeline.ZAdd(getRedisKey(KeyPostVotedZSetPrefix+postId), redis.Z{
 			Score:  value,
 			Member: userId,
-		}).Result()
+		})
 	}
+	_, err := pipeline.Exec()
+	return err
+}
+
+func CreatePost(postId int64) error {
+	// 开启redis事务
+	pipeline := client.TxPipeline()
+	// 帖子时间
+	pipeline.ZAdd(getRedisKey(KeyPostTimeZSet), redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: postId,
+	}).Result()
+
+	// 帖子分数
+	pipeline.ZAdd(getRedisKey(KeyPostScoreZSet), redis.Z{
+		Score:  float64(time.Now().Unix()),
+		Member: postId,
+	}).Result()
+	_, err := pipeline.Exec()
 	return err
 }

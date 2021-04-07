@@ -16,6 +16,6 @@ type ParamLogin struct {
 // 投票数据
 type ParamVoteData struct {
 	// UserID 从请求中获取当前的用户
-	PostID    string `json:"post_id,string" binding:"required"`                 // 帖子id
-	Direction int8  `json:"direction,string" binding:"required,oneof=1 0 -1" ` // 赞成票(1) 反对票(-1) 取消投票(0)
+	PostID    string `json:"post_id" binding:"required"`                 // 帖子id
+	Direction int8  `json:"direction,string" binding:"oneof=1 0 -1" ` // 赞成票(1) 反对票(-1) 取消投票(0)
 }
