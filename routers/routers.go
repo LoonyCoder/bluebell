@@ -8,6 +8,7 @@ import (
 	gs "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
+	"time"
 
 	_ "BlueBell/docs" // 千万不要忘了导入把你上一步生成的docs
 
@@ -18,7 +19,7 @@ func SetupRouter(mode string) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode) // gin设置成发布模式
 	}
 	engine := gin.New()
-	engine.Use(logger.GinLogger(), logger.GinRecovery(true))
+	engine.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.RateLimitMiddleware(2 * time.Second, 1))
 
 	// 注册swagger api相关路由
 	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
