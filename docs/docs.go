@@ -116,21 +116,27 @@ var doc = `{
             ],
             "properties": {
                 "author_id": {
+                    "description": "作者id",
                     "type": "integer"
                 },
                 "author_name": {
+                    "description": "作者",
                     "type": "string"
                 },
                 "community_id": {
+                    "description": "社区id",
                     "type": "integer"
                 },
                 "content": {
+                    "description": "帖子内容",
                     "type": "string"
                 },
                 "create_time": {
+                    "description": "帖子创建时间",
                     "type": "string"
                 },
                 "id": {
+                    "description": "帖子id",
                     "type": "string",
                     "example": "0"
                 },
@@ -141,12 +147,15 @@ var doc = `{
                     "type": "string"
                 },
                 "status": {
+                    "description": "帖子状态",
                     "type": "integer"
                 },
                 "title": {
+                    "description": "帖子标题",
                     "type": "string"
                 },
                 "vote_num": {
+                    "description": "投票数",
                     "type": "integer"
                 }
             }
