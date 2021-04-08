@@ -74,8 +74,17 @@ func GetPostListHandler(context *gin.Context) {
 	ResponseSuccess(context, data)
 }
 
-// GetPostListHandler2 升级版忒自列表接口
-// 根据前端传来的排序参数（按创建时间、按分数） 动态获取贴子列表
+// GetPostListHandler2 升级版帖子列表接口
+// @Summary 升级版帖子列表接口
+// @Description 可按社区按时间或分数排序查询帖子列表接口
+// @Tags 帖子相关接口
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string false "Bearer 用户令牌"
+// @Param object query models.ParamPostList false "查询参数"
+// @Security ApiKeyAuth
+// @Success 200 {object} _ResponsePostList
+// @Router /posts2 [get]
 func GetPostListHandler2(context *gin.Context) {
 	// 1.获取参数
 	p := &models.ParamPostList{
@@ -89,11 +98,10 @@ func GetPostListHandler2(context *gin.Context) {
 		return
 	}
 
-
 	// 获取数据
-	data, err := logic.GetPostList2(p)
+	data, err := logic.GetPostListNew(p)
 	if err != nil {
-		zap.L().Error("logic.GetPostList2() failed", zap.Error(err))
+		zap.L().Error("logic.GetPostListNew() failed", zap.Error(err))
 		ResponseError(context, CodeServerBusy)
 		return
 	}

@@ -5,7 +5,12 @@ import (
 	"BlueBell/logger"
 	"BlueBell/middlewares"
 	"github.com/gin-gonic/gin"
+	gs "github.com/swaggo/gin-swagger"
+	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
+
+	_ "BlueBell/docs" // 千万不要忘了导入把你上一步生成的docs
+
 )
 
 func SetupRouter(mode string) *gin.Engine {
@@ -14,6 +19,9 @@ func SetupRouter(mode string) *gin.Engine {
 	}
 	engine := gin.New()
 	engine.Use(logger.GinLogger(), logger.GinRecovery(true))
+
+	// 注册swagger api相关路由
+	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
 	v1 := engine.Group("/api/v1")
 	//注册业务路由
