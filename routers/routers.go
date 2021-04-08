@@ -2,6 +2,7 @@ package routers
 
 import (
 	"BlueBell/controller"
+	_ "BlueBell/docs" // 千万不要忘了导入把你上一步生成的docs
 	"BlueBell/logger"
 	"BlueBell/middlewares"
 	"github.com/gin-contrib/pprof"
@@ -9,10 +10,6 @@ import (
 	gs "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
 	"net/http"
-	"time"
-
-	_ "BlueBell/docs" // 千万不要忘了导入把你上一步生成的docs
-
 )
 
 func SetupRouter(mode string) *gin.Engine {
@@ -20,10 +17,17 @@ func SetupRouter(mode string) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode) // gin设置成发布模式
 	}
 	engine := gin.New()
-	engine.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.RateLimitMiddleware(2*time.Second, 1))
+	//engine.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.RateLimitMiddleware(2*time.Second, 1))
+	engine.Use(logger.GinLogger(), logger.GinRecovery(true))
 
 	// 注册swagger api相关路由
 	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
+
+	engine.LoadHTMLFiles("./templates/index.html")
+	engine.Static("/static", "./static")
+	engine.GET("/", func(context *gin.Context) {
+		context.HTML(http.StatusOK, "index.html", nil)
+	})
 
 	engine.GET("/ping", func(context *gin.Context) {
 		context.String(http.StatusOK, "pong")
