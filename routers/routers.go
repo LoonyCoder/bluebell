@@ -4,6 +4,7 @@ import (
 	"BlueBell/controller"
 	"BlueBell/logger"
 	"BlueBell/middlewares"
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	gs "github.com/swaggo/gin-swagger"
 	"github.com/swaggo/gin-swagger/swaggerFiles"
@@ -19,7 +20,7 @@ func SetupRouter(mode string) *gin.Engine {
 		gin.SetMode(gin.ReleaseMode) // gin设置成发布模式
 	}
 	engine := gin.New()
-	engine.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.RateLimitMiddleware(2 * time.Second, 1))
+	engine.Use(logger.GinLogger(), logger.GinRecovery(true), middlewares.RateLimitMiddleware(2*time.Second, 1))
 
 	// 注册swagger api相关路由
 	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
@@ -51,6 +52,9 @@ func SetupRouter(mode string) *gin.Engine {
 		v1.POST("/vote", controller.PostVoteHandler)
 
 	}
+
+	// 注册pprof相关路由
+	pprof.Register(engine)
 
 	engine.NoRoute(func(context *gin.Context) {
 		context.JSON(http.StatusOK, gin.H{
