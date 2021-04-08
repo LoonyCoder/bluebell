@@ -23,6 +23,10 @@ func SetupRouter(mode string) *gin.Engine {
 	// 注册swagger api相关路由
 	engine.GET("/swagger/*any", gs.WrapHandler(swaggerFiles.Handler))
 
+	engine.GET("/ping", func(context *gin.Context) {
+		context.String(http.StatusOK, "pong")
+	})
+
 	v1 := engine.Group("/api/v1")
 	//注册业务路由
 	v1.POST("/signup", controller.SignUpHandler)
